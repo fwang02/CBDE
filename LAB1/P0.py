@@ -1,14 +1,13 @@
 from datasets import load_dataset
 import psycopg2
 
-# Step 1: Load the dataset
+# carregar el conjunt de dades
 dataset = load_dataset("bookcorpus.py", split='train',trust_remote_code=True)
 
-# Step 2: Extract sentences (limiting to 10,000 sentences)
+# extreure frases (limitant a 10.000 frases)
 sentences = dataset[:10000]['text']
 
-# Step 3: Connect to PostgreSQL database
-
+# connectar a la base de dades PostgreSQL
 conn = psycopg2.connect(
     dbname="cbde", 
     user="postgres", 
@@ -18,7 +17,7 @@ conn = psycopg2.connect(
 )
 cur = conn.cursor()
 
-# Step 4: Create a table for storing sentences
+# crear una taula per emmagatzemar frases y els seus embeddings
 cur.execute('''
     CREATE TABLE IF NOT EXISTS sentences (
         id SERIAL PRIMARY KEY,
@@ -29,7 +28,7 @@ cur.execute('''
 conn.commit()
 
 #\pset pager off
-# Step 5: Insert sentences into the PostgreSQL database
+# inserir frases a la base de dades PostgreSQL
 for sentence in sentences:
     cur.execute("INSERT INTO sentences (sentence) VALUES (%s)", (sentence,))
 conn.commit()
