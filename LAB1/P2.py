@@ -21,7 +21,7 @@ for row in rows:
     id = row[0]
     embedding = row[1]
     top1_cos, top2_cos  = float('-inf'), float('-inf')
-    top1_euc, top2_euc = float('inf'), float('inf')
+    top1_euc, top2_euc = float('-inf'), float('-inf')
     top1_cos_id, top2_cos_id = -1, -1
     top1_euc_id, top2_euc_id = -1, -1
 

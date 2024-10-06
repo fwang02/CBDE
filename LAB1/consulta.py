@@ -9,7 +9,7 @@ conn = psycopg2.connect(
 )
 cur = conn.cursor()
 
-consulta = "SELECT * FROM sentences LIMIT 10;"
+consulta = "SELECT * FROM sentences LIMIT 100;"
 cur.execute(consulta)
 filas = cur.fetchall()
 
