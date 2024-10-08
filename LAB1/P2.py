@@ -16,7 +16,7 @@ cur = conn.cursor()
 def euclidean_distance(embedding1, embedding2):
     return np.linalg.norm(np.array(embedding1) - np.array(embedding2))
 
-cur.execute("SELECT id, embedding FROM sentences ORDER BY RANDOM() LIMIT 10;")
+cur.execute("SELECT id, embedding FROM sentences WHERE id BETWEEN 1 AND 10;")
 rows = cur.fetchall()
 
 cur.execute("SELECT id, embedding FROM sentences;")
