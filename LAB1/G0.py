@@ -21,19 +21,20 @@ cur = conn.cursor()
 
 # crear una taula per emmagatzemar frases y els seus embeddings
 cur.execute('''
-    CREATE TABLE IF NOT EXISTS sentences (
+    CREATE TABLE IF NOT EXISTS sentences_pgv (
         id SERIAL PRIMARY KEY,
         sentence TEXT NOT NULL,
-        embedding FLOAT8[] DEFAULT '{}'
+        embedding vector(384)
     );
 ''')
 conn.commit()
 
 times = []
+
 # inserir frases a la base de dades PostgreSQL
 for sentence in sentences:
     start_time = time.time()
-    cur.execute("INSERT INTO sentences (sentence) VALUES (%s)", (sentence,))
+    cur.execute("INSERT INTO sentences_pgv (sentence) VALUES (%s)", (sentence,))
     end_time = time.time()
     times.append(end_time - start_time)
 

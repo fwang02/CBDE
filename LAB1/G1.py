@@ -1,13 +1,8 @@
+import sys
 import time
-from datasets import load_dataset
 import numpy as np
 import psycopg2
-
-# carregar el conjunt de dades
-dataset = load_dataset("bookcorpus.py", split='train',trust_remote_code=True)
-
-# extreure frases (limitant a 10.000 frases)
-sentences = dataset[:10000]['text']
+from sentence_transformers import SentenceTransformer
 
 # connectar a la base de dades PostgreSQL
 conn = psycopg2.connect(
@@ -19,26 +14,26 @@ conn = psycopg2.connect(
 )
 cur = conn.cursor()
 
-# crear una taula per emmagatzemar frases y els seus embeddings
-cur.execute('''
-    CREATE TABLE IF NOT EXISTS sentences (
-        id SERIAL PRIMARY KEY,
-        sentence TEXT NOT NULL,
-        embedding FLOAT8[] DEFAULT '{}'
-    );
-''')
-conn.commit()
+# transformador de sentències
+model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+
+consulta = "SELECT id,sentence FROM sentences_pgv;"
+cur.execute(consulta)
+
+# obtenir totes les files
+rows = cur.fetchall()
 
 times = []
-# inserir frases a la base de dades PostgreSQL
-for sentence in sentences:
+for row in rows:
+    id = row[0]
+    sentence = row[1]
+    embedding = model.encode(sentence).tolist()
     start_time = time.time()
-    cur.execute("INSERT INTO sentences (sentence) VALUES (%s)", (sentence,))
+    cur.execute("UPDATE sentences_pgv SET embedding = %s WHERE id = %s", (embedding, id))
     end_time = time.time()
     times.append(end_time - start_time)
 
 conn.commit()
-
 cur.close()
 conn.close()
 
